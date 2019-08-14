@@ -115,6 +115,7 @@ async function processUrls(urls) {
  */
 module.exports = app => {
 
+  // TODO: add more events, e.g. issue_comment.updated ...
   app.on('issue_comment.created', async context => {
 
     const {

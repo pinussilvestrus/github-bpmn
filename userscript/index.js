@@ -15,6 +15,8 @@
 // @grant        GM_log
 // ==/UserScript==
 
+// TODO: new feature on file view: add preview button
+
 try {
     var thumb_selector = 'a';
 
