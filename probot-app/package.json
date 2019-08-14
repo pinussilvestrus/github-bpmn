@@ -1,0 +1,55 @@
+{
+  "name": "render-bpmn",
+  "version": "1.0.0",
+  "description": "Hackdays Project: Render BPMN, CMMN and DMN files on GitHub",
+  "author": "Niklas Kiefer <niklas.kiefer@camunda.com>",
+  "license": "MIT",
+  "repository": "https://github.com/pinussilvestrus/github-bpmn.git",
+  "homepage": "https://github.com/pinussilvestrus/github-bpmn",
+  "bugs": "https://github.com/pinussilvestrus/github-bpmn/issues",
+  "keywords": [
+    "probot",
+    "github",
+    "probot-app",
+    "bpmn"
+  ],
+  "scripts": {
+    "dev": "nodemon",
+    "start": "probot run ./src/index.js",
+    "lint": "standard --fix",
+    "test": "jest && standard",
+    "test:watch": "jest --watch --notify --notifyMode=change --coverage"
+  },
+  "dependencies": {
+    "bpmn-to-image": "^0.4.0",
+    "imgur": "^0.3.1",
+    "probot": "^7.2.0",
+    "request": "^2.88.0",
+    "request-promise": "^4.2.4"
+  },
+  "devDependencies": {
+    "jest": "^24.0.0",
+    "nock": "^10.0.0",
+    "nodemon": "^1.17.2",
+    "smee-client": "^1.0.2",
+    "standard": "^12.0.1"
+  },
+  "engines": {
+    "node": ">= 8.3.0"
+  },
+  "standard": {
+    "env": [
+      "jest"
+    ]
+  },
+  "nodemonConfig": {
+    "exec": "npm start",
+    "watch": [
+      ".env",
+      "."
+    ]
+  },
+  "jest": {
+    "testEnvironment": "node"
+  }
+}
