@@ -1,5 +1,5 @@
-var extractBpmnFileUrl = require('./extractBpmnFileUrl');
+var extractBpmnFileUrls = require('./extractBpmnFileUrls');
 
 module.exports = {
-    extractBpmnFileUrl
+    extractBpmnFileUrls
 }
