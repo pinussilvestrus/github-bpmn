@@ -78,6 +78,8 @@ try {
     function showDiagram(e) {
         let sourceUrl = this.href || e.href;
         let viewerType = null;
+        
+        // to which parent element the svg will be appended
         let ele = $('.file-wrap');
         if (e.href)
             ele = $('body');
@@ -103,7 +105,7 @@ try {
         $.ajax(loc, {
             dataType: 'json'
         }).done(function (json) {
-            let xml = atob(json.content);
+            let xml = b64DecodeUnicode(json.content);
 
             viewer.importXML(xml, function (err) {
 
@@ -136,9 +138,6 @@ try {
         $('.js-canvas-parent').remove();
     }
 
-    $('body').on('mouseenter', thumb_selector, showDiagram);
-    $('body').on('mouseleave', thumb_selector, hideDiagram);
-
     function addRenderButton() {
         if ($(".final-path").length &&
             $('.final-path').text().includes('.bpmn') ||
@@ -150,10 +149,6 @@ try {
         $("a#render-diagram").on('click', openDiagram);
     }
 
-    function Sleep(milliseconds) {
-        return new Promise(resolve => setTimeout(resolve, milliseconds));
-    }
-
     // opens the diagram in a new window
     async function openDiagram() {
         showDiagram(this);
@@ -163,6 +158,15 @@ try {
         var html = $(".svg").html();
         $(w.document.body).html(html);
     }
+    
+    /**
+     * Active calls
+     */
+
+    // add the render button in case of a site refresh
+    addRenderButton();
+    $('body').on('mouseenter', thumb_selector, showDiagram);
+    $('body').on('mouseleave', thumb_selector, hideDiagram);
 
     // listens to node remove event in DOM, as GitHub dynamically changes the view within the a repository
     $('body').on("DOMNodeRemoved", async function (event) {
@@ -173,8 +177,20 @@ try {
         }
     });
 
-    // add the render button in case of a site refresh
-    addRenderButton();
+    /**
+     * Helper functions
+     */
+
+    function b64DecodeUnicode(str) {
+        // Going backwards: from bytestream, to percent-encoding, to original string.
+        return decodeURIComponent(atob(str).split('').map(function(c) {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join(''));
+    }
+
+    function Sleep(milliseconds) {
+        return new Promise(resolve => setTimeout(resolve, milliseconds));
+    }
 
 } catch (e) {
     GM_log(e);
