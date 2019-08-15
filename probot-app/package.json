@@ -5,7 +5,7 @@
   "author": "Niklas Kiefer <niklas.kiefer@camunda.com>",
   "license": "MIT",
   "repository": "https://github.com/pinussilvestrus/github-bpmn.git",
-  "homepage": "https://github.com/pinussilvestrus/github-bpmn",
+  "homepage": "https://github.com/pinussilvestrus/github-bpmn/probot-app",
   "bugs": "https://github.com/pinussilvestrus/github-bpmn/issues",
   "keywords": [
     "probot",
