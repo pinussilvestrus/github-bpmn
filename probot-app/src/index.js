@@ -14,12 +14,53 @@ const {
   convertAll
 } = require('bpmn-to-image');
 
-const extractBpmnFileUrls = require('./helper').extractBpmnFileUrls;
+const {
+  extractBpmnFileUrls,
+  templates
+} = require('./helper');
+
+let log;
 
 const writeFileAsync = promisify(fs.writeFile);
 
 const deleteFileAsync = promisify(fs.unlink);
 
+/**
+ * Generates String which contains necessary information about the current
+ * processed comment
+ *
+ * @param {Comment} options.comment
+ * @param {Repository} options.repository
+ *
+ * @return {String}
+ */
+function getContextString(options) {
+
+  const {
+    comment,
+    repository
+  } = options;
+
+  return JSON.stringify({
+    repository: repository.full_name,
+    issue: comment.issue_url,
+    comment: comment.id
+  });
+
+}
+
+/**
+ * Patches a comment content.
+ *
+ * @param {String} options.body
+ * @param {Array<Url>} options.urls
+ * @param {Comment} options.comment
+ * @param {GithubApiClient} options.github
+ * @param {Repository} options.repository
+ * @param {Function} options.templateFn
+ *
+ * @return {Promise}
+ */
 async function updateComment(options) {
 
   let {
@@ -30,22 +71,21 @@ async function updateComment(options) {
   const {
     comment,
     github,
-    repository
+    repository,
+    templateFn
   } = options;
 
-  // update comment
   urls.forEach(u => {
     const {
-      url,
-      uploadedUrl
+      url
     } = u;
 
     // updated 'to' idx
     const to = u.to = body.indexOf(url) + url.length;
 
-    const img = `<br/><img data-original=${url} src=${uploadedUrl} />`;
+    const tag = templateFn(u);
 
-    body = body.slice(0, to + 1) + img + body.slice(to + 1);
+    body = body.slice(0, to + 1) + tag + body.slice(to + 1);
 
   });
 
@@ -57,6 +97,33 @@ async function updateComment(options) {
   });
 }
 
+/**
+ * Adds a loading spinner for every url occurence
+ * @param {*} options
+ *
+ * @return {Promise}
+ */
+async function addLoadingSpinners(options) {
+
+  await updateComment({
+    ...options,
+    templateFn: templates.renderSpinnerTmpl
+  });
+
+}
+
+/**
+ * TODO: Move to own module
+ * Processes all url occurrences by
+ * - Fetching the url's content
+ * - Saving file content to disk
+ * - Render bpmn content to image
+ * - Upload to imgur file space
+ *
+ * @param {Array<Url>} urls
+ *
+ * @return {Promise}
+ */
 async function processUrls(urls) {
 
   async function process(u, idx) {
@@ -94,14 +161,13 @@ async function processUrls(urls) {
 
     } catch (error) {
 
-      console.error(error);
+      log.error(error, 'Error un upload file');
 
       return;
     }
 
     if (!response || !response.data.link) {
 
-      // TODO: better error logging
       return;
     }
 
@@ -116,56 +182,84 @@ async function processUrls(urls) {
 
   const promises = urls.map(process);
 
-  return await Promise.all(promises);
+  await Promise.all(promises);
 }
 
 /**
- * This is the main entrypoint to your Probot app
+ * Renders all attached bpmn file urls to actual diagram
+ *
+ * @param {*} context
+ *
+ * @return {Promise}
+ */
+async function renderDiagrams(context) {
+
+  const {
+    github,
+    payload
+  } = context;
+
+  const {
+    comment,
+    repository
+  } = payload;
+
+  let {
+    body
+  } = comment;
+
+  const contextString = getContextString({ comment, repository });
+
+  if (!body) {
+    return;
+  }
+
+  // check whether comment contains uploaded bpmn file
+  const urls = extractBpmnFileUrls(body);
+
+  if (!urls || !urls.length) {
+    return;
+  }
+
+  log.info(`Processing of Created Comment started, ${contextString}`);
+
+  await addLoadingSpinners({
+    body,
+    comment,
+    github,
+    repository,
+    urls
+  });
+
+  log.info(`Added Loading Spinners, ${contextString}`);
+
+  await processUrls(urls);
+
+  await updateComment({
+    body,
+    comment,
+    github,
+    repository,
+    templateFn: templates.renderDiagramTmpl,
+    urls
+  });
+
+  log.info(`Comment updated with Rendered Diagrams, ${contextString}`);
+
+  // TODO: cleanup imgur files afterwards?
+}
+
+/**
+ * Probot App entry point
  * @param {import('probot').Application} app
  */
 module.exports = app => {
 
-  // TODO: add more events, e.g. issue_comment.edited ...
+  log = app.log;
+
+  // TODO: add more events, e.g. issue.created ...
   app.on([
     'issue_comment.created',
     'issue_comment.edited'
-  ], async context => {
-
-    const {
-      github,
-      payload
-    } = context;
-
-    const {
-      comment,
-      repository
-    } = payload;
-
-    let {
-      body
-    } = comment;
-
-    if (!body) {
-      return;
-    }
-
-    // check whether comment contains uploaded bpmn file
-    const urls = extractBpmnFileUrls(body);
-
-    if (!urls || !urls.length) {
-      return;
-    }
-
-    await processUrls(urls);
-    await updateComment({
-      body,
-      comment,
-      github,
-      repository,
-      urls
-    });
-
-    // TODO: cleanup imgur files afterwards?
-
-  });
+  ], renderDiagrams);
 };

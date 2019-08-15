@@ -12,6 +12,8 @@ npm install
 npm start
 ```
 
+This will start the Probot App on http://localhost:3000 and be ready for registering. __Note:__ on additional start after registering could be needed work properly, causing registering delays to the smee.io proxy.
+
 ## Contributing
 
 If you have suggestions for how probot could be improved, or want to report a bug, open an issue! We'd love all and any contributions.

@@ -1,5 +1,5 @@
 // const regex = new RegExp("/\[.*\]\((https:\/\/|http:\/\/).*\)/g");
-const regex = /\[.*\]\((https:\/\/|http:\/\/).*\)/g;
+const regex = /\[.+\]\((https:\/\/|http:\/\/).*\)/g;
 
 function resolveUrl(occurrence) {
   return occurrence.substring(

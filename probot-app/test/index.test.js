@@ -5,6 +5,7 @@ const nock = require('nock');
 const { Probot } = require('probot');
 
 jest.mock('bpmn-to-image');
+jest.mock('imgur');
 
 const renderBpmnApp = require('../src');
 
@@ -113,22 +114,37 @@ describe('render-bpmn', () => {
 
   });
 
-  test('updates comment after created', async () => {
+  test('update comment after created', async () => {
 
     nock('https://api.github.com')
       .patch(
         '/repos/pinussilvestrus/github-bpmn/issues/comments/1', (body) => {
 
+          // then, update #1 loading spinner
           expect(body).not.toBeUndefined();
           expect(body.body).toContain(
-            '<img data-original=https://github.com/pinussilvestrus/github-bpmn/files/3504544/diagram_copypaste.bpmn.txt'
+            '![](https://github.com/pinussilvestrus/github-bpmn/blob/master/probot-app/src/misc/loading.gif?raw=true)'
           );
+
+          nock('https://api.github.com')
+            .patch(
+              '/repos/pinussilvestrus/github-bpmn/issues/comments/1', (body) => {
+
+                // then, update #2 rendered diagram
+                expect(body).not.toBeUndefined();
+                expect(body.body).toContain(
+                  '<img data-original=https://github.com/pinussilvestrus/github-bpmn/files/3504544/diagram_copypaste.bpmn.txt'
+                );
+
+                return true;
+              })
+            .reply(200);
 
           return true;
         })
       .reply(200);
 
-    // Receive a webhook event
+    // when
     await probot.receive({ name: 'issue_comment', payload });
   });
 });
