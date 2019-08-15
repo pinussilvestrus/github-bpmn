@@ -39,8 +39,8 @@ function getContextString(options) {
 function cleanupSpinners(options) {
 
   const {
-    urls, 
-    body 
+    urls,
+    body
   } = options;
 
   urls.forEach(u => {
@@ -92,7 +92,7 @@ async function updateComment(options) {
 
   });
 
-  cleanupSpinners({ urls, body })
+  cleanupSpinners({ urls, body });
 
   // TODO: refactor me to a better fit pattern
   if (comment) {
