@@ -25,6 +25,15 @@ const writeFileAsync = promisify(fs.writeFile);
 
 const deleteFileAsync = promisify(fs.unlink);
 
+/**
+ * Generates String which contains necessary information about the current
+ * processed comment
+ *
+ * @param {Comment} options.comment
+ * @param {Repository} options.repository
+ *
+ * @return {String}
+ */
 function getContextString(options) {
 
   const {
@@ -40,6 +49,18 @@ function getContextString(options) {
 
 }
 
+/**
+ * Patches a comment content.
+ *
+ * @param {String} options.body
+ * @param {Array<Url>} options.urls
+ * @param {Comment} options.comment
+ * @param {GithubApiClient} options.github
+ * @param {Repository} options.repository
+ * @param {Function} options.templateFn
+ *
+ * @return {Promise}
+ */
 async function updateComment(options) {
 
   let {
@@ -76,6 +97,12 @@ async function updateComment(options) {
   });
 }
 
+/**
+ * Adds a loading spinner for every url occurence
+ * @param {*} options
+ *
+ * @return {Promise}
+ */
 async function addLoadingSpinners(options) {
 
   await updateComment({
@@ -85,6 +112,18 @@ async function addLoadingSpinners(options) {
 
 }
 
+/**
+ * TODO: Move to own module
+ * Processes all url occurrences by
+ * - Fetching the url's content
+ * - Saving file content to disk
+ * - Render bpmn content to image
+ * - Upload to imgur file space
+ *
+ * @param {Array<Url>} urls
+ *
+ * @return {Promise}
+ */
 async function processUrls(urls) {
 
   async function process(u, idx) {
@@ -143,9 +182,16 @@ async function processUrls(urls) {
 
   const promises = urls.map(process);
 
-  return await Promise.all(promises);
+  await Promise.all(promises);
 }
 
+/**
+ * Renders all attached bpmn file urls to actual diagram
+ *
+ * @param {*} context
+ *
+ * @return {Promise}
+ */
 async function renderDiagrams(context) {
 
   const {
