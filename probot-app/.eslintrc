@@ -1,0 +1,9 @@
+
+{
+    "extends": [
+      "plugin:bpmn-io/es6"
+    ],
+    "rules": {
+        "no-useless-catch": 0
+    }
+}
