@@ -12,6 +12,7 @@ let log;
  * processed comment
  *
  * @param {Comment} options.comment
+ * @param {Issue} options.issue
  * @param {Repository} options.repository
  *
  * @return {String}
@@ -20,30 +21,32 @@ function getContextString(options) {
 
   const {
     comment,
+    issue,
     repository
   } = options;
 
   return JSON.stringify({
     repository: repository.full_name,
-    issue: comment.issue_url,
-    comment: comment.id
+    issue: comment ? comment.issue_url : issue.url,
+    comment: comment ? comment.id : 'Not a comment'
   });
 
 }
 
 /**
- * Patches a comment content.
+ * Patches a comment or issue content.
  *
  * @param {String} options.body
  * @param {Array<Url>} options.urls
  * @param {Comment} options.comment
  * @param {GithubApiClient} options.github
+ * @param {Issue} options.issue
  * @param {Repository} options.repository
  * @param {Function} options.templateFn
  *
  * @return {Promise}
  */
-async function updateComment(options) {
+async function updateCommentOrIssue(options) {
 
   let {
     body,
@@ -53,6 +56,7 @@ async function updateComment(options) {
   const {
     comment,
     github,
+    issue,
     repository,
     templateFn
   } = options;
@@ -71,12 +75,26 @@ async function updateComment(options) {
 
   });
 
-  await github.issues.updateComment({
-    owner: repository.owner.login,
-    repo: repository.name,
-    comment_id: comment.id,
-    body: body
-  });
+
+  if (comment) {
+    await github.issues.updateComment({
+      owner: repository.owner.login,
+      repo: repository.name,
+      comment_id: comment.id,
+      body: body
+    });
+  } else {
+
+    await github.issues.update({
+      owner: repository.owner.login,
+      repo: repository.name,
+      issue_number: issue.number,
+      number: issue.number,
+      body: body
+    });
+  }
+
+
 }
 
 /**
@@ -87,7 +105,7 @@ async function updateComment(options) {
  */
 async function addLoadingSpinners(options) {
 
-  await updateComment({
+  await updateCommentOrIssue({
     ...options,
     templateFn: templates.renderSpinnerTmpl
   });
@@ -110,14 +128,15 @@ async function renderDiagrams(context) {
 
   const {
     comment,
+    issue,
     repository
   } = payload;
 
   let {
     body
-  } = comment;
+  } = comment || issue;
 
-  const contextString = getContextString({ comment, repository });
+  const contextString = getContextString({ comment, issue, repository });
 
   if (!body) {
     return;
@@ -136,6 +155,7 @@ async function renderDiagrams(context) {
     body,
     comment,
     github,
+    issue,
     repository,
     urls
   });
@@ -144,10 +164,11 @@ async function renderDiagrams(context) {
 
   await processUrls(urls);
 
-  await updateComment({
+  await updateCommentOrIssue({
     body,
     comment,
     github,
+    issue,
     repository,
     templateFn: templates.renderDiagramTmpl,
     urls
@@ -169,6 +190,8 @@ module.exports = app => {
   // TODO: add more events, e.g. issue.created ...
   app.on([
     'issue_comment.created',
-    'issue_comment.edited'
+    'issue_comment.edited',
+    'issues.opened',
+    'issues.edited'
   ], renderDiagrams);
 };
