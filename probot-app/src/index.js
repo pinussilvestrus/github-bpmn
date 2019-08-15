@@ -57,6 +57,92 @@ async function updateComment(options) {
   });
 }
 
+async function renderDiagrams(context) {
+  const {
+    github,
+    payload
+  } = context;
+
+  const {
+    comment,
+    repository
+  } = payload;
+
+  let {
+    body
+  } = comment;
+
+  if (!body) {
+    return;
+  }
+
+  // check whether comment contains uploaded bpmn file
+  const urls = extractBpmnFileUrls(body);
+
+  if (!urls || !urls.length) {
+    return;
+  }
+
+  await addLoadingSpinners({
+    body,
+    comment,
+    github,
+    repository,
+    urls
+  });
+
+  await processUrls(urls);
+  await updateComment({
+    body,
+    comment,
+    github,
+    repository,
+    urls
+  });
+
+  // TODO: cleanup imgur files afterwards?
+}
+
+async function addLoadingSpinners(options) {
+
+  // TODO: merge with #updateComment functionality
+  let {
+    body,
+    urls
+  } = options;
+
+  const {
+    comment,
+    github,
+    repository
+  } = options;
+
+  urls.forEach(u => {
+    const {
+      url
+    } = u;
+
+    // updated 'to' idx
+    const to = u.to = body.indexOf(url) + url.length;
+
+    const gif = `<span data-original=${url}/>
+    ![](https://github.com/pinussilvestrus/github-bpmn/blob/master/probot-app/src/misc/loading.gif?raw=true)
+    `;
+
+    body = body.slice(0, to + 1) + gif + body.slice(to + 1);
+
+  });
+
+  await github.issues.updateComment({
+    owner: repository.owner.login,
+    repo: repository.name,
+    comment_id: comment.id,
+    body: body
+  });
+
+
+}
+
 async function processUrls(urls) {
 
   async function process(u, idx) {
@@ -125,47 +211,9 @@ async function processUrls(urls) {
  */
 module.exports = app => {
 
-  // TODO: add more events, e.g. issue_comment.edited ...
+  // TODO: add more events, e.g. issue.created ...
   app.on([
     'issue_comment.created',
     'issue_comment.edited'
-  ], async context => {
-
-    const {
-      github,
-      payload
-    } = context;
-
-    const {
-      comment,
-      repository
-    } = payload;
-
-    let {
-      body
-    } = comment;
-
-    if (!body) {
-      return;
-    }
-
-    // check whether comment contains uploaded bpmn file
-    const urls = extractBpmnFileUrls(body);
-
-    if (!urls || !urls.length) {
-      return;
-    }
-
-    await processUrls(urls);
-    await updateComment({
-      body,
-      comment,
-      github,
-      repository,
-      urls
-    });
-
-    // TODO: cleanup imgur files afterwards?
-
-  });
+  ], renderDiagrams);
 };
