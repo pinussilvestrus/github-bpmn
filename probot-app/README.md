@@ -1,6 +1,6 @@
-# probot
+# render-bpmn
 
-> A GitHub App built with [Probot](https://github.com/probot/probot) that A Probot app
+> A GitHub App built with [Probot](https://github.com/probot/probot) that automatically renders BPMN files on GitHub Issues. 
 
 ## Setup
 
@@ -20,4 +20,4 @@ For more, check out the [Contributing Guide](CONTRIBUTING.md).
 
 ## License
 
-[ISC](LICENSE) © 2019 Niklas Kiefer <niklas.kiefer@camunda.com>
+[MIT](LICENSE) © 2019 Niklas Kiefer <niklas.kiefer@camunda.com>
