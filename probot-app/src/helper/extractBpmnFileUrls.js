@@ -26,13 +26,19 @@ module.exports = function(content) {
     while ( (result = regex.exec(content)) !== null ) {
 
         const occurrence = result[0],
-            index = result.index;
+            index = result.index,
+            url = resolveUrl(occurrence)
+
+        // do not include already rendered diagrams
+        if(content.includes(`data-original=${url}`)) {
+            continue;
+        }
 
         occurrences.push({
             raw: occurrence,
             from: index,
             to: index + occurrence.length,
-            url: resolveUrl(occurrence)
+            url: url
         });
     }
 

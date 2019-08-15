@@ -41,7 +41,7 @@ async function updateComment(options) {
     // updated 'to' idx
     const to = u.to = body.indexOf(url) + url.length;
 
-    const img = `<br/><img src=${uploadedUrl} />`;
+    const img = `<br/><img data-original=${url} src=${uploadedUrl} />`;
 
     body = body.slice(0, to + 1) + img + body.slice(to + 1);
 
@@ -115,8 +115,11 @@ async function processUrls(urls) {
  */
 module.exports = app => {
 
-  // TODO: add more events, e.g. issue_comment.updated ...
-  app.on('issue_comment.created', async context => {
+  // TODO: add more events, e.g. issue_comment.edited ...  
+  app.on([ 
+    'issue_comment.created',
+    'issue_comment.edited'
+  ], async context => {
 
     const {
       github,
@@ -151,6 +154,8 @@ module.exports = app => {
       repository,
       urls
     });
+
+    // TODO: cleanup imgur files afterwards?
 
   });
 }
