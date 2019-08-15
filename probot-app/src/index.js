@@ -58,6 +58,7 @@ async function updateComment(options) {
 }
 
 async function renderDiagrams(context) {
+
   const {
     github,
     payload
@@ -92,6 +93,7 @@ async function renderDiagrams(context) {
   });
 
   await processUrls(urls);
+
   await updateComment({
     body,
     comment,
