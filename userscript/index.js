@@ -2,7 +2,7 @@
 
 // ==UserScript==
 // @name         BPMN on hover
-// @namespace    http://tampermonkey.net/
+// @namespace    https://github.com/pinussilvestrus/github-bpmn
 // @version      0.1.0
 // @description  On hover over a bpmn file it will display it
 // @author       Langleu
@@ -14,6 +14,7 @@
 // @resource     https://unpkg.com/bpmn-js@5.0.0/dist/assets/diagram-js.css
 // @resource     https://unpkg.com/cmmn-js@0.19.2/dist/assets/diagram-js.css
 // @resource     https://unpkg.com/dmn-js@7.0.0/dist/assets/diagram-js.css
+// @grant        none
 // ==/UserScript==
 
 const thumb_selector = '.content a';
@@ -21,13 +22,18 @@ const thumb_selector = '.content a';
 // returns source url for GitHub
 function getSrc(src) {
   let splitSrc = src.split('/');
-  let notAllowed = ['blob', 'https:', 'http:', 'github.com', 'master'];
+  let notAllowed = ['blob', 'https:', 'http:', 'github.com'];
 
   splitSrc = splitSrc.filter(function(word) {
     if (!notAllowed.includes(word))
       return word;
   });
-  return `https://api.github.com/repos/${splitSrc.reverse().pop()}/${splitSrc.pop()}/contents/${splitSrc.reverse().join('/')}`;
+
+  let user = splitSrc.reverse().pop();
+  let repo = splitSrc.pop();
+  let ref = splitSrc.pop();
+
+  return `https://api.github.com/repos/${user}/${repo}/contents/${splitSrc.reverse().join('/').replace('#','')}?ref=${ref}`;
 }
 
 // returns the viewer depending on the viewer type
@@ -52,23 +58,32 @@ function returnViewer(type) {
 
 // exports and appends an SVG for any viewer
 function exportSVG(viewer, posX, posY, ele) {
-  viewer.saveSVG(function(err, svg) {
-    ele.append(`<div class="svg"> ${svg} </div>`);
 
-    $('.svg')
-      .css('position', 'fixed')
-      .css('bottom', (window.innerHeight - posY) * 0.5)
-      .css('left', posX + 25)
-      .css('z-index', 9999)
-      .css('background-color', 'white')
-      .css('height', '50%')
-      .css('width', '50%')
-      .css('box-shadow', '0px 0px 20px 5px rgba(0,0,0,1)');
+    return new Promise((resolve, reject) => {
+        viewer.saveSVG(function(err, svg) {
 
-    $('.svg svg')
-      .attr('width', '100%')
-      .attr('height', '100%');
-  });
+        if (err) reject();
+        
+            ele.append(`<div class="svg"> ${svg} </div>`);
+        
+            $('.svg')
+              .css('position', 'fixed')
+              .css('bottom', (window.innerHeight - posY) * 0.5)
+              .css('left', posX + 25)
+              .css('z-index', 9999)
+              .css('background-color', 'white')
+              .css('height', '50%')
+              .css('width', '50%')
+              .css('box-shadow', '0px 0px 20px 5px rgba(0,0,0,1)');
+        
+            $('.svg svg')
+              .attr('width', '100%')
+              .attr('height', '100%');
+
+              resolve();
+          });
+    })
+  
 }
 
 // shows BPMN, CMMN and DMN (DRD) diagrams
@@ -99,12 +114,13 @@ function showDiagram(e) {
   var viewer = returnViewer(viewerType);
 
   // ajax call to request content from github usercontent
+  return new Promise((resolve, reject) => {
   $.ajax(loc, {
     dataType: 'json'
   }).done(function(json) {
     let xml = b64DecodeUnicode(json.content);
 
-    viewer.importXML(xml, function(err) {
+    viewer.importXML(xml, async function(err) {
 
       if (viewerType == 'dmn') {
         var activeView = viewer.getActiveView();
@@ -118,13 +134,16 @@ function showDiagram(e) {
           // zoom to fit full viewport
           canvas.zoom('fit-viewport');
 
-          exportSVG(activeEditor, e.clientX, e.clientY, ele);
+          await exportSVG(activeEditor, e.clientX, e.clientY, ele);
         }
       } else {
         (err) ? console.error(err): viewer.get('canvas').zoom('fit-viewport');
 
-        exportSVG(viewer, e.clientX, e.clientY, ele);
+        await exportSVG(viewer, e.clientX, e.clientY, ele);
+
+        resolve();
       }
+    });
     });
   });
 }
@@ -148,9 +167,8 @@ function addRenderButton() {
 
 // opens the diagram in a new window
 async function openDiagram() {
-  showDiagram(this);
+  await showDiagram(this);
 
-  await Sleep(500);
   var w = window.open();
   var html = $('.svg').html();
   $(w.document.body).html(html);
