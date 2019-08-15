@@ -9,10 +9,11 @@ let log;
 
 /**
  * Generates String which contains necessary information about the current
- * processed comment
+ * processed comment | issue | pull_request
  *
  * @param {Comment} options.comment
  * @param {Issue} options.issue
+ * @param {PullRequest} options.pull_request
  * @param {Repository} options.repository
  *
  * @return {String}
@@ -22,31 +23,34 @@ function getContextString(options) {
   const {
     comment,
     issue,
+    pull_request,
     repository
   } = options;
 
   return JSON.stringify({
     repository: repository.full_name,
-    issue: comment ? comment.issue_url : issue.url,
-    comment: comment ? comment.id : 'Not a comment'
+    issue: comment ? comment.issue_url : (issue ||{}).url,
+    pull_request: (pull_request || {}).url,
+    comment: (comment || {}).id
   });
 
 }
 
 /**
- * Patches a comment or issue content.
+ * Patches a comment or issue or pull request content.
  *
  * @param {String} options.body
  * @param {Array<Url>} options.urls
  * @param {Comment} options.comment
  * @param {GithubApiClient} options.github
  * @param {Issue} options.issue
+ * @param {PullRequest} options.pull_request
  * @param {Repository} options.repository
  * @param {Function} options.templateFn
  *
  * @return {Promise}
  */
-async function updateCommentOrIssue(options) {
+async function updateComment(options) {
 
   let {
     body,
@@ -57,6 +61,7 @@ async function updateCommentOrIssue(options) {
     comment,
     github,
     issue,
+    pull_request,
     repository,
     templateFn
   } = options;
@@ -76,6 +81,7 @@ async function updateCommentOrIssue(options) {
   });
 
 
+  // TODO: refactor me to a better fit pattern
   if (comment) {
     await github.issues.updateComment({
       owner: repository.owner.login,
@@ -83,13 +89,22 @@ async function updateCommentOrIssue(options) {
       comment_id: comment.id,
       body: body
     });
-  } else {
+  } else if (issue) {
 
     await github.issues.update({
       owner: repository.owner.login,
       repo: repository.name,
       issue_number: issue.number,
       number: issue.number,
+      body: body
+    });
+  } else {
+
+    await github.pullRequests.update({
+      owner: repository.owner.login,
+      repo: repository.name,
+      pull_number: pull_request.number,
+      number: pull_request.number,
       body: body
     });
   }
@@ -105,7 +120,7 @@ async function updateCommentOrIssue(options) {
  */
 async function addLoadingSpinners(options) {
 
-  await updateCommentOrIssue({
+  await updateComment({
     ...options,
     templateFn: templates.renderSpinnerTmpl
   });
@@ -129,14 +144,15 @@ async function renderDiagrams(context) {
   const {
     comment,
     issue,
+    pull_request,
     repository
   } = payload;
 
   let {
     body
-  } = comment || issue;
+  } = comment || issue || pull_request;
 
-  const contextString = getContextString({ comment, issue, repository });
+  const contextString = getContextString({ comment, issue, pull_request, repository });
 
   if (!body) {
     return;
@@ -156,6 +172,7 @@ async function renderDiagrams(context) {
     comment,
     github,
     issue,
+    pull_request,
     repository,
     urls
   });
@@ -164,11 +181,12 @@ async function renderDiagrams(context) {
 
   await processUrls(urls);
 
-  await updateCommentOrIssue({
+  await updateComment({
     body,
     comment,
     github,
     issue,
+    pull_request,
     repository,
     templateFn: templates.renderDiagramTmpl,
     urls
@@ -187,11 +205,12 @@ module.exports = app => {
 
   log = app.log;
 
-  // TODO: add more events, e.g. issue.created ...
   app.on([
     'issue_comment.created',
     'issue_comment.edited',
     'issues.opened',
-    'issues.edited'
+    'issues.edited',
+    'pull_request.opened',
+    'pull_request.edited'
   ], renderDiagrams);
 };
