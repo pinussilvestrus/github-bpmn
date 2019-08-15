@@ -36,6 +36,18 @@ function getContextString(options) {
 
 }
 
+function cleanupSpinners(options) {
+
+  const {
+    urls, 
+    body 
+  } = options;
+
+  urls.forEach(u => {
+    body.replace(templates.renderSpinnerTmpl({ url: u.url }), '');
+  });
+}
+
 /**
  * Patches a comment or issue or pull request content.
  *
@@ -80,6 +92,7 @@ async function updateComment(options) {
 
   });
 
+  cleanupSpinners({ urls, body })
 
   // TODO: refactor me to a better fit pattern
   if (comment) {
