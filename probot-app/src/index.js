@@ -1,29 +1,11 @@
-/* global Promise */
-
-const rp = require('request-promise');
-
-const fs = require('fs');
-
-const imgur = require('imgur');
-
-const {
-  promisify
-} = require('util');
-
-const {
-  convertAll
-} = require('bpmn-to-image');
-
 const {
   extractBpmnFileUrls,
   templates
 } = require('./helper');
 
+const processUrls = require('./process-urls');
+
 let log;
-
-const writeFileAsync = promisify(fs.writeFile);
-
-const deleteFileAsync = promisify(fs.unlink);
 
 /**
  * Generates String which contains necessary information about the current
@@ -110,79 +92,6 @@ async function addLoadingSpinners(options) {
     templateFn: templates.renderSpinnerTmpl
   });
 
-}
-
-/**
- * TODO: Move to own module
- * Processes all url occurrences by
- * - Fetching the url's content
- * - Saving file content to disk
- * - Render bpmn content to image
- * - Upload to imgur file space
- *
- * @param {Array<Url>} urls
- *
- * @return {Promise}
- */
-async function processUrls(urls) {
-
-  async function process(u, idx) {
-
-    const {
-      url
-    } = u;
-
-    if (!url) {
-      return;
-    }
-
-    // fetch file content
-    const content = await rp(url);
-
-    // save to temp file
-    const tmpFile = `${__dirname}/../diagram.${idx}.txt`,
-          tmpImgFile = `diagram.${idx}.png`;
-
-    await writeFileAsync(tmpFile, content);
-
-    // generate + upload image
-    let response;
-
-    try {
-      await convertAll([
-        {
-          input: tmpFile,
-          outputs: [ tmpImgFile ]
-        }
-      ]);
-
-      // TODO: way to simply display raw image on GitHub markdown?
-      response = await imgur.uploadFile(tmpImgFile);
-
-    } catch (error) {
-
-      log.error(error, 'Error un upload file');
-
-      return;
-    }
-
-    if (!response || !response.data.link) {
-
-      return;
-    }
-
-    // cleanup
-    deleteFileAsync(tmpFile);
-    deleteFileAsync(tmpImgFile);
-
-    Object.assign(u, {
-      uploadedUrl: response.data.link
-    });
-  }
-
-  const promises = urls.map(process);
-
-  await Promise.all(promises);
 }
 
 /**
