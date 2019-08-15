@@ -15,10 +15,8 @@
 // @grant        GM_log
 // ==/UserScript==
 
-// TODO: new feature on file view: add preview button
-
 try {
-    var thumb_selector = 'a';
+    var thumb_selector = '.content a';
 
     // returns source url for GitHub
     function getSrc(src) {
@@ -56,13 +54,13 @@ try {
     }
 
     // exports and appends an SVG for any viewer
-    function exportSVG(viewer, posX, posY) {
+    function exportSVG(viewer, posX, posY, ele) {
         viewer.saveSVG(function (err, svg) {
-            $('.file-wrap').append(`<div class="svg"> ${svg} </div>`);
+            ele.append(`<div class="svg"> ${svg} </div>`);
 
             $('.svg')
                 .css('position', 'fixed')
-                .css('bottom', window.innerHeight - posY)
+                .css('bottom', (window.innerHeight - posY) * 0.5)
                 .css('left', posX + 25)
                 .css('z-index', 9999)
                 .css('background-color', 'white')
@@ -78,9 +76,12 @@ try {
 
     // shows BPMN, CMMN and DMN (DRD) diagrams
     function showDiagram(e) {
-        let sourceUrl = this.href;
+        let sourceUrl = this.href || e.href;
         let viewerType = null;
-        
+        let ele = $('.file-wrap');
+        if (e.href)
+            ele = $('body');
+
         if (sourceUrl.includes('.bpmn')) {
             viewerType = 'bpmn';
         } else if (sourceUrl.includes('.cmmn')) {
@@ -96,7 +97,6 @@ try {
         $('body').append('<div class="canvas js-canvas-parent"> <div id="js-canvas"></div> </div>');
         $('.js-canvas-parent').css('visibility', 'hidden');
 
-        
         var viewer = returnViewer(viewerType);
 
         // ajax call to request content from github usercontent
@@ -106,26 +106,25 @@ try {
             let xml = atob(json.content);
 
             viewer.importXML(xml, function (err) {
-                
 
                 if (viewerType == 'dmn') {
                     var activeView = viewer.getActiveView();
                     // apply initial logic in DRD view
                     if (activeView.type === 'drd') {
-                      var activeEditor = viewer.getActiveViewer();
-                    
-                      // access active editor components
-                      var canvas = activeEditor.get('canvas');
-                      
-                      // zoom to fit full viewport
-                      canvas.zoom('fit-viewport');
+                        var activeEditor = viewer.getActiveViewer();
 
-                      exportSVG(activeEditor, e.clientX, e.clientY);                        
+                        // access active editor components
+                        var canvas = activeEditor.get('canvas');
+
+                        // zoom to fit full viewport
+                        canvas.zoom('fit-viewport');
+
+                        exportSVG(activeEditor, e.clientX, e.clientY, ele);
                     }
                 } else {
                     (err) ? console.error(err): viewer.get('canvas').zoom('fit-viewport');
 
-                    exportSVG(viewer, e.clientX, e.clientY);
+                    exportSVG(viewer, e.clientX, e.clientY, ele);
                 }
             });
         });
@@ -139,6 +138,44 @@ try {
 
     $('body').on('mouseenter', thumb_selector, showDiagram);
     $('body').on('mouseleave', thumb_selector, hideDiagram);
+
+    function addRenderButton() {
+        if ($(".final-path").length &&
+            $('.final-path').text().includes('.bpmn') ||
+            $('.final-path').text().includes('.cmmn') ||
+            $('.final-path').text().includes('.dmn')
+        ) {
+            $('.Box-header .BtnGroup').append('<a id="render-diagram" class="btn btn-sm BtnGroup-item" href="#">Render</a>');
+        }
+        $("a#render-diagram").on('click', openDiagram);
+    }
+
+    function Sleep(milliseconds) {
+        return new Promise(resolve => setTimeout(resolve, milliseconds));
+    }
+
+    // opens the diagram in a new window
+    async function openDiagram() {
+        showDiagram(this);
+
+        await Sleep(500);
+        var w = window.open();
+        var html = $(".svg").html();
+        $(w.document.body).html(html);
+    }
+
+    // listens to node remove event in DOM, as GitHub dynamically changes the view within the a repository
+    $('body').on("DOMNodeRemoved", async function (event) {
+        if (typeof event.target.className == 'string' && event.target.className.includes('container-lg')) {
+            await Sleep(500);            
+
+            addRenderButton();
+        }
+    });
+
+    // add the render button in case of a site refresh
+    addRenderButton();
+
 } catch (e) {
     GM_log(e);
 }
