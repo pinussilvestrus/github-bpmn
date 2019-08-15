@@ -1,11 +1,13 @@
+/* global Promise */
+
 const rp = require('request-promise');
 
 const fs = require('fs');
 
 const imgur = require('imgur');
 
-const { 
-  promisify 
+const {
+  promisify
 } = require('util');
 
 const {
@@ -14,7 +16,7 @@ const {
 
 const extractBpmnFileUrls = require('./helper').extractBpmnFileUrls;
 
-const writeFileAsync = promisify(fs.writeFile)
+const writeFileAsync = promisify(fs.writeFile);
 
 const deleteFileAsync = promisify(fs.unlink);
 
@@ -61,9 +63,9 @@ async function processUrls(urls) {
 
     const {
       url
-     } = u;
+    } = u;
 
-    if(!url) {
+    if (!url) {
       return;
     }
 
@@ -76,20 +78,28 @@ async function processUrls(urls) {
 
     await writeFileAsync(tmpFile, content);
 
-    // generate image
-    // TODO: catch errors
-    await convertAll([
-      {
-        input: tmpFile,
-        outputs: [ tmpImgFile ]
-      }
-    ]);
+    // generate + upload image
+    let response;
 
-    // upload image
-    // TODO: way to simply display raw image on GitHub markdown?
-    const response = await imgur.uploadFile(tmpImgFile)
+    try {
+      await convertAll([
+        {
+          input: tmpFile,
+          outputs: [ tmpImgFile ]
+        }
+      ]);
 
-    if(!response || !response.data.link) {
+      // TODO: way to simply display raw image on GitHub markdown?
+      response = await imgur.uploadFile(tmpImgFile);
+
+    } catch (error) {
+
+      console.error(error);
+
+      return;
+    }
+
+    if (!response || !response.data.link) {
 
       // TODO: better error logging
       return;
@@ -115,8 +125,8 @@ async function processUrls(urls) {
  */
 module.exports = app => {
 
-  // TODO: add more events, e.g. issue_comment.edited ...  
-  app.on([ 
+  // TODO: add more events, e.g. issue_comment.edited ...
+  app.on([
     'issue_comment.created',
     'issue_comment.edited'
   ], async context => {
@@ -135,22 +145,22 @@ module.exports = app => {
       body
     } = comment;
 
-    if(!body) {
+    if (!body) {
       return;
     }
 
-    // check whether comment contains uploaded bpmn file 
+    // check whether comment contains uploaded bpmn file
     const urls = extractBpmnFileUrls(body);
 
-    if(!urls || !urls.length) {
+    if (!urls || !urls.length) {
       return;
     }
 
     await processUrls(urls);
-    await updateComment({ 
-      body, 
+    await updateComment({
+      body,
       comment,
-      github, 
+      github,
       repository,
       urls
     });
@@ -158,4 +168,4 @@ module.exports = app => {
     // TODO: cleanup imgur files afterwards?
 
   });
-}
+};

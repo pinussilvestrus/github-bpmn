@@ -1,0 +1,19 @@
+{
+  "action": "created",
+  "issue": {
+    "number": 1,
+    "user": {
+      "login": "pinussilvestrus"
+    }
+  },
+  "comment": {
+    "id": 1, 
+    "body": "[diagram_copypaste.bpmn.txt](https://github.com/pinussilvestrus/github-bpmn/files/3504544/diagram_copypaste.bpmn.txt)"
+  },
+  "repository": {
+    "name": "github-bpmn",
+    "owner": {
+      "login": "pinussilvestrus"
+    }
+  }
+}
