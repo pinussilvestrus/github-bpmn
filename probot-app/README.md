@@ -2,6 +2,8 @@
 
 > A GitHub App built with [Probot](https://github.com/probot/probot) that automatically renders BPMN files on GitHub Issues. 
 
+![](../resources/screenshot.png)
+
 ## Setup
 
 ```sh
