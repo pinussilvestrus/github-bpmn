@@ -1,5 +1,8 @@
-var extractBpmnFileUrls = require('./extractBpmnFileUrls');
+const extractBpmnFileUrls = require('./extractBpmnFileUrls');
+
+const templates = require('./templates');
 
 module.exports = {
-  extractBpmnFileUrls
+  extractBpmnFileUrls,
+  templates
 };
