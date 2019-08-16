@@ -6,3 +6,4 @@ notifications:
   disabled: true
 before_script: 
   - cd probot-app
+  - npm install
