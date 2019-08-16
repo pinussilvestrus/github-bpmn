@@ -108,7 +108,6 @@ async function updateComment(options) {
       owner: repository.owner.login,
       repo: repository.name,
       issue_number: issue.number,
-      number: issue.number,
       body: body
     });
   } else {
@@ -117,7 +116,6 @@ async function updateComment(options) {
       owner: repository.owner.login,
       repo: repository.name,
       pull_number: pull_request.number,
-      number: pull_request.number,
       body: body
     });
   }

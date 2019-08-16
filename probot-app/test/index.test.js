@@ -83,12 +83,8 @@ describe('render-bpmn', () => {
 
   // load probot
   beforeEach(() => {
-    probot = new Probot({});
-    // Load our app into probot
-    const app = probot.load(renderBpmnApp);
-
-    // just return a test token
-    app.app = () => 'test';
+    probot = new Probot({ id: 123, githubToken: 'test' });
+    probot.load(renderBpmnApp);
   });
 
   // mock requests
