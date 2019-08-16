@@ -4,3 +4,6 @@ node_js:
   - "8.3"
 notifications:
   disabled: true
+before_script: 
+  - cd probot-app
+  
