@@ -1,0 +1,20 @@
+{
+    "name": "BPMN on Hover",
+    "version": "0.0.1",
+    "description": "Renders BPMN files on hover.",
+    "manifest_version": 2,
+    "icons": {
+      "16": "src/static/images/logo_16.png",
+      "32": "src/static/images/logo_32.png",
+      "48": "src/static/images/logo_48.png",
+      "128": "src/static/images/logo_128.png"
+    },
+    "content_scripts": [
+        {
+          "matches": [
+            "https://github.com/*/*"
+          ],
+          "js": ["src/static/vendor/js/bpmn-viewer.production.min.js", "src/static/vendor/js/cmmn-viewer.production.min.js", "src/static/vendor/js/dmn-viewer.production.min.js", "src/static/vendor/js/jquery-3.4.1.min.js" ,"src/content.js"]
+        }
+      ]
+  }
