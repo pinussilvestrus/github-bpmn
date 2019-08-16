@@ -9,7 +9,7 @@ function resolveUrl(occurrence) {
 }
 
 /**
- * find all urls and return in the form of
+ * Find all urls and return in the form of
  * { from: <num>, to: <num>, url: <string>, raw: <string> }
  * @param {String} content
  *
