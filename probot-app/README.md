@@ -1,6 +1,8 @@
 # render-bpmn
 
-> A GitHub App built with [Probot](https://github.com/probot/probot) that automatically renders BPMN files on GitHub Issues and Pull Requests. 
+[![Build Status](https://travis-ci.org/pinussilvestrus/github-bpmn.svg?branch=master)](https://travis-ci.org/pinussilvestrus/github-bpmn)
+
+A GitHub App built with [Probot](https://github.com/probot/probot) that automatically renders BPMN files on GitHub Issues and Pull Requests. 
 
 ![](../resources/screenshot.png)
 
