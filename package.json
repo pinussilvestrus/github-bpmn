@@ -5,6 +5,7 @@
     "lerna": "^3.10.7"
   },
   "scripts": {
-    "release": "lerna publish"
+    "pre-install": "lerna exec -- npm i",
+    "release": "npm run pre-install && lerna publish"
   }
 }
