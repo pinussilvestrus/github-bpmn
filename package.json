@@ -2,7 +2,7 @@
   "name": "root",
   "private": true,
   "devDependencies": {
-    "lerna": "^3.10.7"
+    "lerna": "^3.16.4"
   },
   "scripts": {
     "pre-install": "lerna exec -- npm i",
