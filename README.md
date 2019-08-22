@@ -1,5 +1,7 @@
 # github-bpmn
-Hackdays Project: Render BPMN, CMMN and DMN files on GitHub 
+Applications Collection: Render BPMN, CMMN and DMN files on GitHub 
+
+Built at 2019 [Camunda](https://camunda.com/) Hackdays
 
 ## Outline
 
