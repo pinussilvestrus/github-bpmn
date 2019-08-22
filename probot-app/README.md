@@ -1,3 +1,5 @@
+> Note: Currently it's not possible to upload `.bpmn` files via drag and drop on GitHub. Attaching a `.txt` extension at the end can be a workaround.
+
 # render-bpmn
 
 [![Build Status](https://travis-ci.org/pinussilvestrus/github-bpmn.svg?branch=master)](https://travis-ci.org/pinussilvestrus/github-bpmn)
