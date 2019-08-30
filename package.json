@@ -6,6 +6,7 @@
   },
   "scripts": {
     "pre-install": "lerna exec -- npm i",
-    "release": "npm run pre-install && lerna publish"
+    "release": "npm run pre-install && lerna publish",
+    "start": "cd probot-app && npm run start"
   }
 }
