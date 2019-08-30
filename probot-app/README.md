@@ -42,6 +42,8 @@ Tryout the Heroku Deploy Button below and [follow the setup instructions](https:
 
 [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/pinussilvestrus/github-bpmn)
 
+Also feel free to have a look at [the other deployment options](https://probot.github.io/docs/deployment/).
+
 
 ## Contributing
 
