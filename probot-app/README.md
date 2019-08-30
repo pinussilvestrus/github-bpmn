@@ -10,15 +10,31 @@ A GitHub App built with [Probot](https://github.com/probot/probot) that automati
 
 ## Setup
 
-```sh
-# Install dependencies
-npm install
+The application is connected to GitHub as a [GitHub app](https://developer.github.com/apps/). Get started by creating a GitHub app, either via the development setup or using [manual configuration steps](#manual-steps) as documented below.
 
-# Run the bot
-npm start
+
+### Automatic Development Setup
+
+Checkout, install and run the application in development mode as shown below:
+
+```bash
+git clone git@github.com:pinussilvestrus/github-bpmn.git
+cd probot-app
+npm install
+npm run dev
 ```
 
-This will start the Probot App on http://localhost:3000 and be ready for registering. __Note:__ on additional start after registering could be needed work properly, causing registering delays to the smee.io proxy.
+Access the application on [`localhost:3000`](http://localhost:3000). [Probot](https://probot.github.io/), the app framework used by the render-bpmn application, helps you to create your GitHub app. Give your app a unique name and remember it.
+
+Once the setup completes probot writes the basic app configuration to the `probot-app/.env` file. Go to your app page on GitHub, fetch client ID and client secret and add these properties to the `.env` file as `GITHUB_CLIENT_ID` and `GITHUB_CLIENT_SECRET`, respectively.
+
+__Note:__ on additional start after registering could be needed work properly, causing registering delays to the smee.io proxy.
+
+### Manual Steps
+
+[Create your GitHub app](https://github.com/settings/apps/new) and configure it according to the [provided app mainfest](../probot-app/app.yml).
+
+Create a `.env` file with the required configuration variables as provided by GitHub. Use the [provided example](../probot-app/.env.example) as a starting point.
 
 ## Contributing
 
