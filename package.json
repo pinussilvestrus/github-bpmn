@@ -5,7 +5,7 @@
     "lerna": "^3.16.4"
   },
   "scripts": {
-    "pre-install": "lerna exec -- npm i",
+    "postinstall": "lerna exec -- npm i",
     "release": "npm run pre-install && lerna publish",
     "start": "cd probot-app && npm run start"
   }

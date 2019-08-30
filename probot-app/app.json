@@ -1,0 +1,12 @@
+{
+    "name": "render-bpmn",
+    "description": "Render BPMN, CMMN and DMN files on GitHub",
+    "repository": "https://github.com/pinussilvestrus/github-bpmn",
+    "logo": "https://raw.githubusercontent.com/pinussilvestrus/github-bpmn/master/chrome-ext/src/static/images/logo_48.png",
+    "keywords": [
+      "probot",
+      "github",
+      "probot-app",
+      "bpmn"
+    ]
+  }
