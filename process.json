@@ -1,0 +1,16 @@
+{
+    "apps": [
+      {
+        "name": "render-bpmn",
+        "cwd": ".",
+        "script": "npm",
+        "args": [
+          "start"
+        ],
+        "node_args": [],
+        "log_date_format": "YYYY-MM-DD HH:mm Z",
+        "exec_interpreter": "",
+        "exec_mode": "fork"
+      }
+    ]
+  }
