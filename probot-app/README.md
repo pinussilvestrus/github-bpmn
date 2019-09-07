@@ -36,6 +36,15 @@ __Note:__ on additional start after registering could be needed work properly, c
 
 Create a `.env` file with the required configuration variables as provided by GitHub. Use the [provided example](../probot-app/.env.example) as a starting point.
 
+## Deploy
+
+Tryout the Heroku Deploy Button below and [follow the setup instructions](https://probot.github.io/docs/deployment/#heroku).
+
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/pinussilvestrus/github-bpmn)
+
+Also feel free to have a look at [the other deployment options](https://probot.github.io/docs/deployment/).
+
+
 ## Contributing
 
 If you have suggestions for how probot could be improved, or want to report a bug, open an issue! We'd love all and any contributions.
