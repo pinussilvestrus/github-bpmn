@@ -31,7 +31,7 @@
     "eslint": "^6.2.1",
     "eslint-plugin-bpmn-io": "^0.10.0",
     "jest": "^24.9.0",
-    "nock": "^11.3.2",
+    "nock": "^11.3.4",
     "nodemon": "^1.19.1",
     "smee-client": "^1.1.0"
   },
