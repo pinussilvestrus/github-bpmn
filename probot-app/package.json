@@ -1,6 +1,6 @@
 {
   "name": "render-bpmn",
-  "version": "1.4.0",
+  "version": "1.5.1",
   "description": "Hackdays Project: Render BPMN, CMMN and DMN files on GitHub",
   "author": "Niklas Kiefer <niklas.kiefer@camunda.com>",
   "license": "MIT",
