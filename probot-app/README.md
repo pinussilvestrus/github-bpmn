@@ -54,3 +54,9 @@ For more, check out the [Contributing Guide](CONTRIBUTING.md).
 ## License
 
 [MIT](LICENSE) © 2019 Niklas Kiefer <niklas.kiefer@camunda.com>
+
+## License
+
+MIT
+
+Contains parts ([bpmn-to-image](https://github.com/bpmn-io/bpmn-to-image)) released under the [bpmn.io license](http://bpmn.io/license).
