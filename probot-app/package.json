@@ -28,7 +28,7 @@
     "request-promise": "^4.2.4"
   },
   "devDependencies": {
-    "eslint": "^6.4.0",
+    "eslint": "^6.5.1",
     "eslint-plugin-bpmn-io": "^0.10.0",
     "jest": "^24.9.0",
     "nock": "^11.3.4",
