@@ -32,7 +32,7 @@
     "eslint-plugin-bpmn-io": "^0.10.0",
     "jest": "^24.9.0",
     "nock": "^11.3.5",
-    "nodemon": "^1.19.3",
+    "nodemon": "^1.19.4",
     "smee-client": "^1.1.0"
   },
   "engines": {
