@@ -23,7 +23,7 @@
   "dependencies": {
     "bpmn-to-image": "^0.4.0",
     "imgur": "^0.3.1",
-    "probot": "^9.6.6",
+    "probot": "^9.8.1",
     "request": "^2.88.0",
     "request-promise": "^4.2.5"
   },
