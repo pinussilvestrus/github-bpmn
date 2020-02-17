@@ -21,7 +21,7 @@
     "test:watch": "jest --watch --notify --notifyMode=change --coverage"
   },
   "dependencies": {
-    "bpmn-to-image": "^0.4.0",
+    "bpmn-to-image": "^0.5.1",
     "imgur": "^0.3.1",
     "probot": "^9.9.1",
     "request": "^2.88.0",
