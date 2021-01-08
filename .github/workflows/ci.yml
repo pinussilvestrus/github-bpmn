@@ -29,9 +29,7 @@ jobs:
           ${{ runner.OS }}-
     - name: Install depedencies
       run: npm install
-    - name: Checkout probot application
-      run: cd probot-app/
     - name: Execute tests
-      run: npm test
+      run: cd probot-app && npm test
       env:
         CI: true
