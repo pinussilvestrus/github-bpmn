@@ -148,7 +148,7 @@ async function addLoadingSpinners(options) {
 async function renderDiagrams(context) {
 
   const {
-    github,
+    octokit: github,
     payload
   } = context;
 
