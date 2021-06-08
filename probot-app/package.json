@@ -23,15 +23,15 @@
   "dependencies": {
     "bpmn-to-image": "^0.6.0",
     "imgur": "^1.0.2",
-    "probot": "^11.3.0",
+    "probot": "^11.4.1",
     "request": "^2.88.2",
     "request-promise": "^4.2.6"
   },
   "devDependencies": {
-    "eslint": "^7.26.0",
+    "eslint": "^7.28.0",
     "eslint-plugin-bpmn-io": "^0.12.0",
-    "jest": "^26.6.3",
-    "nock": "^13.0.11",
+    "jest": "^27.0.4",
+    "nock": "^13.1.0",
     "nodemon": "^2.0.7",
     "smee-client": "^1.2.2"
   },
