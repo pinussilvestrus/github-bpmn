@@ -29,7 +29,7 @@ function getContextString(options) {
 
   return JSON.stringify({
     repository: repository.full_name,
-    issue: comment ? comment.issue_url : (issue ||{}).url,
+    issue: comment ? comment.issue_url : (issue || {}).url,
     pull_request: (pull_request || {}).url,
     comment: (comment || {}).id
   });
