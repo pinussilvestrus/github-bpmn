@@ -1,5 +1,3 @@
-/* global Promise */
-
 const rp = require('request-promise');
 
 const fs = require('fs');
