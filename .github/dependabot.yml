@@ -1,9 +1,0 @@
-version: 2
-updates:
-- package-ecosystem: npm
-  directory: "/probot-app"
-  schedule:
-    interval: monthly
-    time: "10:00"
-    timezone: Europe/Amsterdam
-  versioning-strategy: increase
