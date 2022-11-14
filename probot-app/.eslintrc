@@ -1,7 +1,7 @@
 
 {
     "extends": [
-      "plugin:bpmn-io/es6"
+      "plugin:bpmn-io/node"
     ],
     "rules": {
         "no-useless-catch": 0
