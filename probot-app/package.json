@@ -30,7 +30,7 @@
   },
   "devDependencies": {
     "eslint": "^8.27.0",
-    "eslint-plugin-bpmn-io": "^0.16.0",
+    "eslint-plugin-bpmn-io": "^1.0.0",
     "jest": "^29.2.1",
     "nock": "^13.2.9",
     "nodemon": "^2.0.20",
