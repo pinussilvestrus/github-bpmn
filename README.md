@@ -1,3 +1,5 @@
+> ⚠️ This project is not actively maintained and won't likely get any updates.
+
 # github-bpmn
 Applications Collection: Render BPMN, CMMN and DMN files on GitHub 
 
